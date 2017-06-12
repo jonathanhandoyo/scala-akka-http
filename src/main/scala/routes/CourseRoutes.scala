@@ -1,44 +1,28 @@
 package routes
 
 import akka.actor.ActorSystem
-import akka.event.{Logging, LoggingAdapter}
+import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.stream.ActorMaterializer
-import domains.User
+import domains.Course
 import util.JsonSupport
 
 import scala.concurrent.ExecutionContext
 
-trait UserRoutes extends Directives with JsonSupport {
+trait CourseRoutes extends Directives with JsonSupport {
 
   implicit val system: ActorSystem
   implicit val materializer: ActorMaterializer
   implicit val executionContext: ExecutionContext
   implicit val logger: LoggingAdapter
 
-  val usersRoutes: Route = {
-    pathPrefix("users") {
-      pathEnd {
-        getUsers ~
-        postUsers
-      }
-    }
-  }
-
-  def getUsers: Route = {
-    get {
-      complete {
-        OK -> User(1, "first-name-1", "last-name-1")
-      }
-    }
-  }
-
-  def postUsers: Route = {
-    post {
-      entity(as[User]) { (body) =>
+  val courseRoutes: Route = {
+    path("courses") {
+      get {
         complete {
-          Created -> body
+          logger.info("test test")
+          OK -> Course(1, "a")
         }
       }
     }

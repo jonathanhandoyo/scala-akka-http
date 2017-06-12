@@ -1,23 +1,28 @@
 import akka.actor.ActorSystem
+import akka.event.LoggingAdapter
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
-import routes.UserRoutes
+import routes.{CourseRoutes, UserRoutes}
 
 import scala.concurrent.ExecutionContextExecutor
 
-class AkkaHttpApp extends UserRoutes {
-}
+object AkkaHttpApp
+  extends CourseRoutes
+    with UserRoutes {
 
-object AkkaHttpApp {
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val executionContext: ExecutionContextExecutor = system.dispatcher
+  implicit val logger: LoggingAdapter = system.log
+
+  val routes: Route = {
+    usersRoutes ~
+    courseRoutes
+  }
+
   def main(args: Array[String]): Unit = {
-
-    implicit val system: ActorSystem = ActorSystem()
-    implicit val materializer: ActorMaterializer = ActorMaterializer()
-    implicit val executionContext: ExecutionContextExecutor = system.dispatcher
-
-    val app = new AkkaHttpApp()
-
-    Http().bindAndHandle(app.usersRoutes, "localhost", 8080)
+    Http().bindAndHandle(routes, "localhost", 8080)
     system.log.info(s"test: http://localhost:8080/hello")
   }
 }
