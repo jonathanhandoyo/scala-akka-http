@@ -1,44 +1,63 @@
 package routes
 
-import akka.actor.ActorSystem
-import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.{Directives, Route}
-import akka.stream.ActorMaterializer
-import domains.User
-import util.JsonSupport
+import domains.{Metric, User}
+import util.{JsonSupport, LoggingSupport}
 
-import scala.concurrent.ExecutionContext
+trait UserRoutes
+  extends Directives
+    with UserMetricsRoutes
+    with JsonSupport
+    with LoggingSupport {
 
-trait UserRoutes extends Directives with JsonSupport {
-
-  implicit val system: ActorSystem
-  implicit val materializer: ActorMaterializer
-  implicit val executionContext: ExecutionContext
-  implicit val logger: LoggingAdapter
-
-  val usersRoutes: Route = {
+  def usersRoutes: Route = {
     pathPrefix("users") {
       pathEnd {
         getUsers ~
-        postUsers
+        postUser
+      }
+      pathPrefix(LongNumber) { (userId: Long) =>
+        pathEnd {
+          getUser(userId) ~
+          putUser(userId)
+        } ~
+        metricsRoutes(userId)
       }
     }
   }
 
-  def getUsers: Route = {
+  private def getUsers: Route = {
     get {
       complete {
-        OK -> User(1, "first-name-1", "last-name-1")
+        OK -> Array(User(1, "first-name-1", "last-name-1"))
       }
     }
   }
 
-  def postUsers: Route = {
+  private def postUser: Route = {
     post {
-      entity(as[User]) { (body) =>
+      entity(as[User]) { (body: User) =>
         complete {
           Created -> body
+        }
+      }
+    }
+  }
+
+  private def getUser(userId: Long): Route = {
+    get {
+      complete {
+        OK -> User(userId, "first-name-1", "last-name-1")
+      }
+    }
+  }
+
+  private def putUser(userId: Long): Route = {
+    put {
+      entity(as[User]) { (body: User) =>
+        complete {
+          OK -> body
         }
       }
     }

@@ -16,7 +16,7 @@ object AkkaHttpApp
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
   implicit val logger: LoggingAdapter = system.log
 
-  val routes: Route = {
+  def routes: Route = {
     usersRoutes ~
     courseRoutes
   }

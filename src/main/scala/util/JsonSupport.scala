@@ -1,7 +1,7 @@
 package util
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import domains.{Course, Item, Order, User}
+import domains._
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
@@ -10,4 +10,5 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   implicit val userFormat: RootJsonFormat[User] = jsonFormat3(User)
   implicit val courseFormat: RootJsonFormat[Course] = jsonFormat2(Course)
+  implicit val metricFormat: RootJsonFormat[Metric] = jsonFormat5(Metric)
 }
