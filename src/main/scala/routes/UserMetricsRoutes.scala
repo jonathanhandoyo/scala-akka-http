@@ -15,7 +15,7 @@ trait UserMetricsRoutes
       pathEnd {
         getUserMetrics(userId) ~
         postUserMetric(userId)
-      }
+      } ~
       pathPrefix(Segment) { (metricCode: String) =>
         getUserMetric(userId, metricCode) ~
         putUserMetric(userId, metricCode) ~

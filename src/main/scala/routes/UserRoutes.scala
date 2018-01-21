@@ -16,7 +16,7 @@ trait UserRoutes
       pathEnd {
         getUsers ~
         postUser
-      }
+      } ~
       pathPrefix(LongNumber) { (userId: Long) =>
         pathEnd {
           getUser(userId) ~
